@@ -19,7 +19,7 @@ implements ConfigurationSerializable {
 
     public AdditionalInventory(Player player) {
         PlayerInventory inventory = player.getInventory();
-        boolean bl = this.creative = player.getGameMode() == GameMode.CREATIVE;
+        this.creative = player.getGameMode() == GameMode.CREATIVE;
         this.extraContents = inventory.getExtraContents();
         this.storageContents = inventory.getStorageContents();
         this.armorContents = inventory.getArmorContents();

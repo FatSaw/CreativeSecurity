@@ -18,6 +18,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -200,11 +202,6 @@ public enum Message {
     VERSION_INFO("version-info"),
     INTERACT_CREATIVE_ENTITY("creative-entity"),
     PLAYER_ONLY_CMD("player-only-command"),
-    USE_OPPASSWORD("use-oppassword"),
-    USE_CONSOLEINGAME("use-consoleingame"),
-    WRONG_OPPASSWORD("wrong-oppassword"),
-    WRONG_CONSOLEINGAME("wrong-consoleingame"),
-    EXECUTE_CONSOLEINGAME("execute-consoleingame"),
     PREVENTED_ENDERPEARL("prevented-enderpearl"),
     NO_PERMISSION("no-permission-command"),
     NO_PERMISSION_HOVER("no-permission-command-hover"),
@@ -212,22 +209,6 @@ public enum Message {
     NO_PERMISSION_SPECTATOR("no-permission-spectator"),
     NO_PERMISSION_ADVENTURE("no-permission-adventure"),
     INVALID_HELP_PAGE_MENU("invalid-help-menu-page"),
-    RIDE_ALLOW("ride-allow"),
-    RIDE_PREVENT("ride-prevent"),
-    RIDE_PREVENT_SIT("ride-prevent-sit"),
-    RIDE_PREVENT_KIDNAP("ride-prevent-kidnap"),
-    RIDE_YOURSELF("ride-yourself"),
-    RIDE_NOTIFY("ride-notify"),
-    RIDE_ACCEPT("ride-accept"),
-    RIDE_ACCEPTED("ride-accepted"),
-    RIDE_SENT("ride-sent"),
-    RIDE_ALREADY("ride-already"),
-    RIDE_TOOFAR("ride-toofar"),
-    RIDE_NOTHING("ride-nothing"),
-    RIDE_THROW("ride-throw"),
-    RIDE_NO_NEAR_ENTITIES("ride-no-near-entities"),
-    RIDE_RIDENEAR("ride-ridenear"),
-    RIDE_BE_RIDDEN("ride-beridden"),
     BLOCKED_COMMAND_ITEM_HOLD("blocked-command-item-hold"),
     BLOCKED_COMMAND_ITEM_INVENTORY("blocked-command-item-inventory"),
     BLOCKED_COMMAND_INV_MATERIAL("blocked-command-inv-material"),
@@ -239,7 +220,6 @@ public enum Message {
     WORLD_EDIT_NO_SELECTION("world-edit-no-selection"),
     WORLD_EDIT_NO_MARKED("world-edit-no-marked"),
     WORLD_EDIT_UNMARKED_SUCCESS("world-edit-unmark-success"),
-    COMMAND_GUARD_NO_SUDO("commandguard-no-sudo"),
     NOT_FOUND("not-found"),
     TARGET_NEVER_JOINED("target-never-joined"),
     INVALID_NUMBER("invalid-number"),
@@ -313,6 +293,7 @@ public enum Message {
                 messages.set(message.key, (Object)defaultMessages.getString(message.key));
                 try {
                     message.setText(ChatColor.translateAlternateColorCodes((char)'&', (String)messages.getString(message.key)));
+                    
                 }
                 catch (NullPointerException npe) {
                     System.out.println("NOTE:                                                 Null messages key: " + message.key);

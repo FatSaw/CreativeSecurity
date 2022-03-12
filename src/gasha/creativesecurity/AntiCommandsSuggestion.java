@@ -41,7 +41,7 @@ implements Listener {
         }
         Player player = event.getPlayer();
         if (!player.hasPermission("creativesecurity.bypass.tabsuggest")) {
-            List extraSuggestions = this.whitelistsKeys.stream().filter(whitelistKey -> player.hasPermission("creativesecurity.tabsuggestwhitelist." + whitelistKey.toLowerCase())).flatMap(whitelistKey -> this.whitelistedCommands.get(whitelistKey).stream()).collect(Collectors.toList());
+            List<String> extraSuggestions = this.whitelistsKeys.stream().filter(whitelistKey -> player.hasPermission("creativesecurity.tabsuggestwhitelist." + whitelistKey.toLowerCase())).flatMap(whitelistKey -> this.whitelistedCommands.get(whitelistKey).stream()).collect(Collectors.toList());
             if (extraSuggestions.isEmpty()) {
                 if (this.getDefaultWhitelist().isEmpty()) {
                     event.getCommands().clear();

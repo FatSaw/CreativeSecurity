@@ -5,7 +5,7 @@ author: Gasha
 
 api-version: 1.13
 
-softdepend: [ProtocolLib, FastAsyncWorldEdit, WorldEdit, WorldGuard, Residence]
+softdepend: [FastAsyncWorldEdit, WorldEdit, WorldGuard, Residence]
 
 permissions:
   creativesecurity.*:

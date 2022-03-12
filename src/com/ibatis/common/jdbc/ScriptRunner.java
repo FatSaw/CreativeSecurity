@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScriptRunner {
-    private static final String DEFAULT_DELIMITER = ";";
+    //private static final String DEFAULT_DELIMITER = ";";
     public static final Pattern delimP = Pattern.compile("^\\s*(--)?\\s*delimiter\\s*=?\\s*([^\\s]+)+\\s*.*$", 2);
     private final Connection connection;
     private final boolean stopOnError;

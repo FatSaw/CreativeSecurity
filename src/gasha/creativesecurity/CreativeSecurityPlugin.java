@@ -1,7 +1,6 @@
 package gasha.creativesecurity;
 
 import com.sk89q.worldedit.WorldEdit;
-import gasha.commandguard.CommandGuard;
 import gasha.creativesecurity.AdditionalInventory;
 import gasha.creativesecurity.AntiCommandsSuggestion;
 import gasha.creativesecurity.Config;
@@ -41,8 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import net.coreprotect.CoreProtect;
-import net.coreprotect.CoreProtectAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Logger;
@@ -74,7 +71,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CreativeSecurityPlugin extends JavaPlugin {
-	//static final String version = Bukkit.getServer().getClass().getPackage().getName().substring(23);
     static java.util.logging.Logger dataLogger;
     private static CreativeSecurityPlugin instance;
     ExecutorService dataLoadingExecutor;
@@ -85,8 +81,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
     private GuiConfig guiConfig;
     private CreativeSecurityCommandExecutor commandExecutor;
     private WorldGuardHook worldGuardHook;
-    private CoreProtectAPI coreProtectAPI;
-    private CommandGuard commandGuard;
     private AntiCommandsSuggestion antiCommandsSuggestion;
     public FileConfiguration messages;
     private ServerShield servershield;
@@ -180,7 +174,7 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             }
         });
         this.saveDefaultConfig();
-        List<String> dependencies = Arrays.asList("ProtocolLib", "WorldEdit");
+        List<String> dependencies = Arrays.asList("WorldEdit");
         for (String dependency : dependencies) {
             Plugin plugin = this.getServer().getPluginManager().getPlugin(dependency);
             if (plugin != null && plugin.isEnabled()) continue;
@@ -191,15 +185,9 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin((Plugin)this);
             return;
         }
-        this.coreProtectAPI = null;
-        if (this.coreProtectAPI != null) {
-            this.getLogger().info("CoreProtect integration loaded");
-        }
         this.getServer().getPluginManager().registerEvents((Listener)new EventManager(), (Plugin)this);
         this.guiConfig = new GuiConfig();
         this.worldGuardHook = new WorldGuardHook();
-        this.commandGuard = new CommandGuard(this);
-        this.commandGuard.initialize();
         this.creativeListener = new CreativeListener();
         this.dataListener = new DataListener();
         this.getServer().getPluginManager().registerEvents((Listener)this.dataListener, (Plugin)this);
@@ -260,18 +248,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
         return this.worldEditIntegration != null;
     }
 
-    private CoreProtectAPI getCoreProtect() {
-        Plugin plugin = this.getServer().getPluginManager().getPlugin("CoreProtect");
-        if (!(plugin instanceof CoreProtect) || plugin.isEnabled()) {
-            return null;
-        }
-        CoreProtectAPI coreProtectAPI = ((CoreProtect)plugin).getAPI();
-        if (!coreProtectAPI.isEnabled() || coreProtectAPI.APIVersion() < 6) {
-            return null;
-        }
-        return coreProtectAPI;
-    }
-
     public void reloadConfig() {
         super.reloadConfig();
         EventManager.eventconfig.reload();
@@ -284,7 +260,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
         this.getGuiConfig().reload();
         this.commandExecutor.reload();
         this.antiCommandsSuggestion.reload();
-        this.commandGuard.reloadPlugin();
     }
 
     public void onDisable() {
@@ -337,9 +312,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
         this.dataLoadingExecutor = null;
         HandlerList.unregisterAll((Plugin)this);
         SqlConfig.closeConnection();
-        if (this.commandGuard != null) {
-            this.commandGuard.disable();
-        }
         dataLogger.config("The plugin is now fully disabled");
     }
 
@@ -357,15 +329,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             return null;
         }
         return (Player)sender;
-    }
-
-    static void setHand(Player p, ItemStack item) {
-        try {
-            p.getInventory().setItemInMainHand(item);
-        }
-        catch (NoSuchMethodError e) {
-            p.setItemInHand(item);
-        }
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -527,7 +490,7 @@ public class CreativeSecurityPlugin extends JavaPlugin {
                     return true;
                 }
                 CreativeListener.mark(stack, (HumanEntity)player);
-                CreativeSecurityPlugin.setHand(player, stack);
+                player.getInventory().setItemInMainHand(stack);
                 Message.MARK_SUCCESS.sendInfo((CommandSender)player);
                 return true;
             }
@@ -553,12 +516,12 @@ public class CreativeSecurityPlugin extends JavaPlugin {
                 lore.remove(0);
                 meta.setLore(lore);
                 stack.setItemMeta(meta);
-                CreativeSecurityPlugin.setHand(player, stack);
+                player.getInventory().setItemInMainHand(stack);
                 Message.UNMARK_SUCCESS.sendInfo((CommandSender)player);
                 return true;
             }
             case "debugcreativeblocks": {
-                if (sender instanceof Player && !Message.hasPermission((Permissible)((Player)sender), "creativesecurity.cmd.debug")) {
+                if (sender instanceof Player && !Message.hasPermission(sender, "creativesecurity.cmd.debug")) {
                     return true;
                 }
                 Player player = this.playerOnly(sender);

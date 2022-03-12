@@ -37,15 +37,11 @@ public class Config {
     static boolean disableservershield = false;
     static EnumSet<Material> untrackedMaterials;
     static EnumSet<Material> immovableBlocks;
-    static boolean oppassword;
-    static boolean consoleingame;
     static boolean arrowmelon;
     static boolean dropmelon;
     static boolean wgmelon;
     static List<String> blacklistpearl;
     static String melonsound;
-    static String oppw;
-    static String consolepw;
     static boolean checkItemPickup;
     static boolean checkCreativeDrop;
     static boolean checkSurvivalDrop;
@@ -148,12 +144,12 @@ public class Config {
 
     static void onGameModeChange(Player player, GameMode from, GameMode to) {
         Lazy<List<String[]>> args = new Lazy<List<String[]>>(() -> ChangeGameModeCommands.buildArgs(player, from, to));
-        Map toAny = changeGameModeHooks.getOrDefault(null, Collections.emptyMap());
+        Map<GameMode, ChangeGameModeCommands> toAny = changeGameModeHooks.getOrDefault(null, Collections.emptyMap());
         Config.onGameModeChange((ChangeGameModeCommands)toAny.get(null), player, args);
-        Config.onGameModeChange((ChangeGameModeCommands)toAny.get((Object)from), player, args);
-        Map toSpecific = changeGameModeHooks.getOrDefault((Object)to, Collections.emptyMap());
+        Config.onGameModeChange((ChangeGameModeCommands)toAny.get(from), player, args);
+        Map<GameMode, ChangeGameModeCommands> toSpecific = changeGameModeHooks.getOrDefault(to, Collections.emptyMap());
         Config.onGameModeChange((ChangeGameModeCommands)toSpecific.get(null), player, args);
-        Config.onGameModeChange((ChangeGameModeCommands)toSpecific.get((Object)from), player, args);
+        Config.onGameModeChange((ChangeGameModeCommands)toSpecific.get(from), player, args);
     }
 
     private static Material material(Logger logger, String line) {
@@ -169,13 +165,13 @@ public class Config {
         block5: {
             try {
                 int entityId = Integer.parseInt(line);
-                entity = EntityType.fromId((int)entityId);
+                entity = EntityType.fromId(entityId);
             }
             catch (NumberFormatException ignored) {
-                entity = EntityType.fromName((String)line);
+                entity = EntityType.fromName(line);
                 if (entity != null) break block5;
                 try {
-                    entity = EntityType.valueOf((String)line.toUpperCase());
+                    entity = EntityType.valueOf(line.toUpperCase());
                 }
                 catch (IllegalArgumentException e) {
                     entity = null;
@@ -363,14 +359,10 @@ public class Config {
         changeGameModeHooks.values().forEach(sub -> sub.values().removeIf(ChangeGameModeCommands::isEmpty));
         changeGameModeHooks.values().removeIf(Map::isEmpty);
         sec = Config.getOrCreateSection((ConfigurationSection)config, "more");
-        oppassword = sec.getBoolean("op-security.enabled", false);
-        consoleingame = sec.getBoolean("console-ingame.enabled", false);
         arrowmelon = sec.getBoolean("melon-arrow-destroy.enabled", false);
         dropmelon = sec.getBoolean("melon-arrow-destroy.dropmelon", false);
         wgmelon = sec.getBoolean("melon-arrow-destroy.worldguard", false);
         melonsound = sec.getString("melon-arrow-destroy.sound", "nosound");
-        oppw = sec.getString("op-security.password", "nopasswordset");
-        consolepw = sec.getString("console-ingame.password", "nopasswordset");
         blacklistpearl = config.getStringList("prevent-enderpearl-region");
         sec = Config.getOrCreateSection((ConfigurationSection)config, "persistence");
         jdbc = sec.getBoolean("jdbc", false);
@@ -400,8 +392,6 @@ public class Config {
 
     static {
         immovableBlocks = EnumSet.noneOf(Material.class);
-        oppassword = false;
-        consoleingame = false;
         arrowmelon = false;
         dropmelon = false;
         wgmelon = false;
