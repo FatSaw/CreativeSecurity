@@ -1,0 +1,71 @@
+GmSelector:
+  title: "§9Выберите режим игры§c!"
+  survival:
+    name: "§2Выживание"
+    # You can getInstance heads from this website: https://minecraft-heads.com/custom/heads/alphabet
+    url: http://textures.minecraft.net/texture/f38d2759569d515d2454d4a7891a94cc63ddfe72d03bfdf76f1d4277d590
+    lore: []
+  creative:
+    name: "§3Творческий"
+    url: http://textures.minecraft.net/texture/2d3b2e3e9954f822b43fe5f915099e0a6caaa81f791222b5803d4145a85170
+    lore: []
+  spectator:
+    name: "§7Наблюдатель"
+    url: http://textures.minecraft.net/texture/f38d2759569d515d2454d4a7891a94cc63ddfe72d03bfdf76f1d4277d590
+    lore: []
+  adventure:
+    name: "§8Приключение"
+    url: http://textures.minecraft.net/texture/42cd5a1b5288caaa21a6acd4c98ceafd4c1588c8b2026c88b70d3c154d39bab
+    lore: []
+  info:
+    name: "§c{player_name}"
+    lore:
+      - ""
+      - "§eВы сейчас используете"
+      - "§3{gamemode} §eрежим игры"
+      - "§fИнвентарь §a#§c{index}"
+
+InventorySelector:
+  title-creative: "§3Выберите инвентарь творческого режима§c!"
+  title-survival: "§2Выберите инвентарь режима выживания§c!"
+  name-format: "§bИнвентарь §a#§c{index}"
+  lore-select:
+    - ""
+    - "§eНажмите чтобы выбрать"
+  lore-selected:
+    - ""
+    - "§eВы сейчас используете этот инвентарь§c!"
+
+  skulls:
+    1: http://textures.minecraft.net/texture/a0a19e23d21f2db063cc55e99ae874dc8b23be779be34e52e7c7b9a25
+    2: http://textures.minecraft.net/texture/cc596a41daea51be2e9fec7de2d89068e2fa61c9d57a8bdde44b55937b6037
+    3: http://textures.minecraft.net/texture/b85d4fda56bfeb85124460ff72b251dca8d1deb6578070d612b2d3adbf5a8
+    4: http://textures.minecraft.net/texture/3852a25fe69ca86fb982fb3cc7ac9793f7356b50b92cb0e193d6b4632a9bd629
+    5: http://textures.minecraft.net/texture/74ee7d954eb14a5ccd346266231bf9a6716527b59bbcd7956cef04a9d9b
+    6: http://textures.minecraft.net/texture/2682a3ae948374e037e3d7dd687d59d185dd2cc8fc09dfeb42f98f8d259e5c3
+    7: http://textures.minecraft.net/texture/4ea30c24c60b3bc1af658ef661b771c48d5b9c9e28188cf9de9f832422e510
+    8: http://textures.minecraft.net/texture/66abafd023f230e4485aaf26e19368f5980d4f14a59fcc6d11a4466994892
+    9: http://textures.minecraft.net/texture/8d7910e10334f890a625483ac0c824b5e4a1a4b15a956327a3e3ae458d9ea4
+    10: http://textures.minecraft.net/texture/9115a8861d6557d2873fec82327ea1d4643e2ff191dbf1ef919f94a545
+
+  back:
+    name: "§cНазад"
+    url: http://textures.minecraft.net/texture/e3fc52264d8ad9e654f415bef01a23947edbccccf649373289bea4d149541f70
+    lore:
+      - "§7Нажмите чтобы вернутся к"
+      - "§7выбору режима игры"
+
+Invsee:
+  title: "§9§l[§c"
+  # appended to "title"
+  title1: "{player}§9§l] §5- §3{gamemode} §3#§a{inv_number}"
+  info:
+    material: PAPER
+    name: "§7Информация §b{gamemode} §3#§a{inv_number}"
+    lore:
+    - ""
+    - "§aUUID: §7{uuid}"
+    - "§aНик: §7{name}"
+  separator:
+    material: GRAY_STAINED_GLASS_PANE
+
