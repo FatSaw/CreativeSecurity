@@ -15,7 +15,6 @@ cooldown-on-checking-placed: false
 # 0: Disabled
 # 1: All affected blocks will be marked as creative. Air and untracked blocks will be unmarked
 # 2: Only changed blocks will be marked. Unchanged blocks will be untouched
-# 3: Full integration. Also checks gravity and physics of special blocks
 # creativesecurity.bypass.worldedit.block to bypass mark with worldedit
 worldedit-integration: 1
 
@@ -811,11 +810,6 @@ execute-on-inventory-join:
   survival-2: []
   # etc.
 
-# prevent region of player using enderpearl teleporting
-# permission creativesecurity.bypass.regionenderpearl
-prevent-enderpearl-region:
-- "disabledregion1"
-- "parkour"
 
 # More instructions and information you can find on plugin wikipedia, there is infinity abilities that you can do with these
 key-binding:

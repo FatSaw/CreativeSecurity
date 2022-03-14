@@ -202,7 +202,6 @@ public enum Message {
     VERSION_INFO("version-info"),
     INTERACT_CREATIVE_ENTITY("creative-entity"),
     PLAYER_ONLY_CMD("player-only-command"),
-    PREVENTED_ENDERPEARL("prevented-enderpearl"),
     NO_PERMISSION("no-permission-command"),
     NO_PERMISSION_HOVER("no-permission-command-hover"),
     NO_PERMISSION_INVENTORY("no-permission-inventory"),

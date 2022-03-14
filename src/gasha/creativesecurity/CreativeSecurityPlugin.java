@@ -20,7 +20,6 @@ import gasha.creativesecurity.guis.GuiListener;
 import gasha.creativesecurity.guis.inventories.GmSelectorGui;
 import gasha.creativesecurity.guis.invsee.InvEditListener;
 import gasha.creativesecurity.hook.WorldEditIntegration;
-import gasha.creativesecurity.hook.WorldGuardHook;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +36,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -77,7 +73,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
     static List<FallingBlock> FBCHECKS;
     private GuiConfig guiConfig;
     private CreativeSecurityCommandExecutor commandExecutor;
-    private WorldGuardHook worldGuardHook;
     private AntiCommandsSuggestion antiCommandsSuggestion;
     public FileConfiguration messages;
     private ServerShield servershield;
@@ -182,7 +177,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             return;
         }
         this.guiConfig = new GuiConfig();
-        this.worldGuardHook = new WorldGuardHook();
         this.creativeListener = new CreativeListener();
         this.dataListener = new DataListener();
         this.getServer().getPluginManager().registerEvents((Listener)this.dataListener, (Plugin)this);
@@ -304,10 +298,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
 
     public GuiConfig getGuiConfig() {
         return this.guiConfig;
-    }
-
-    public WorldGuardHook getWorldGuardHook() {
-        return this.worldGuardHook;
     }
 
     private Player playerOnly(CommandSender sender) {

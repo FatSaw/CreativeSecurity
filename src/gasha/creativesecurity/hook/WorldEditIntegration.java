@@ -4,16 +4,16 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.bukkit.adapter.impl.fawe.BlockMaterial_1_15_2;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.event.extent.EditSessionEvent;
 import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.extent.AbstractDelegateExtent;
 import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.util.eventbus.Subscribe;
 import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 
 import gasha.creativesecurity.BlockPosition;
 import gasha.creativesecurity.Config;
@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -43,15 +44,11 @@ public class WorldEditIntegration {
         try {
             switch (Config.worldEditIntegration) {
                 case 1: {
-                    event.setExtent((Extent)new Level1(stage, actor, world, event.getExtent()));
+                    event.setExtent(new Level1(stage, actor, world, event.getExtent()));
                     break;
                 }
                 case 2: {
-                    event.setExtent((Extent)new Level2(stage, actor, world, event.getExtent()));
-                    break;
-                }
-                case 3: {
-                    event.setExtent((Extent)new Level3(stage, actor, world, event.getExtent()));
+                    event.setExtent(new Level2(stage, actor, world, event.getExtent()));
                     break;
                 }
             }
@@ -78,29 +75,41 @@ public class WorldEditIntegration {
             this.world = world;
             this.player = actor instanceof BukkitPlayer ? ((BukkitPlayer)actor).getPlayer() : (actor instanceof Player ? Bukkit.getPlayer((UUID)actor.getUniqueId()) : null);
         }
+        
 
-        abstract boolean setBlock(BlockPosition var1, RegionPosition var2, RegionData var3, BlockVector3 var4, BaseBlock var5);
 
-        public final boolean setBlock(BlockVector3 vector, BaseBlock newBlock) throws WorldEditException {
-            BlockPosition pos = new BlockPosition(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+		abstract void setMarkBlock(BlockPosition var1, RegionPosition var2, RegionData var3,BlockVector3 position, BaseBlock var5);
+
+        abstract void setMarkBlock(BlockPosition var1, RegionPosition var2, RegionData var3,BlockVector3 position, BlockState var5);
+        
+        public final <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException {
+            BlockPosition pos = new BlockPosition(position.getBlockX(), position.getBlockY(), position.getBlockZ());
             RegionPosition regionPosition = new RegionPosition(pos);
             RegionData regionData = this.regionCache.computeIfAbsent(regionPosition, regPos -> CreativeListener.getRegionData(this.world.getWorld(), regPos));
             if (regionData == null) {
                 return false;
             }
-            return this.setBlock(pos, regionPosition, regionData, vector, newBlock) && super.setBlock(vector, newBlock);
+            if(block instanceof BaseBlock) {
+            	setMarkBlock(pos, regionPosition, regionData,position, (BaseBlock)block);
+            } else if(block instanceof BlockState) {
+            	setMarkBlock(pos, regionPosition, regionData,position, (BlockState)block);
+            }
+        	return extent.setBlock(position.getX(), position.getY(), position.getZ(), block);
         }
-    }
-
-    private class Level3
-    extends Level2 {
-        private Level3(@Nullable EditSession.Stage stage, @Nonnull Actor actor, BukkitWorld world, Extent extent) {
-            super(stage, actor, world, extent);
-        }
-
-        @Override
-        boolean setBlock(BlockPosition pos, RegionPosition regPos, RegionData regData, BlockVector3 vector, BaseBlock newBlock) {
-            return this.world.getBlock(vector).equals(newBlock) || super.setBlock(pos, regPos, regData, vector, newBlock);
+            
+        public <T extends BlockStateHolder<T>> boolean setBlock(int x, int y,int z, T block) throws WorldEditException {
+            BlockPosition pos = new BlockPosition(x, y, z);
+            RegionPosition regionPosition = new RegionPosition(pos);
+            RegionData regionData = this.regionCache.computeIfAbsent(regionPosition, regPos -> CreativeListener.getRegionData(this.world.getWorld(), regPos));
+            if (regionData == null) {
+                return false;
+            }
+            if(block instanceof BaseBlock) {
+            	setMarkBlock(pos, regionPosition, regionData,BlockVector3.at(x, y, z), (BaseBlock)block);
+            } else if(block instanceof BlockState) {
+            	setMarkBlock(pos, regionPosition, regionData,BlockVector3.at(x, y, z), (BlockState)block);
+            }
+        	return extent.setBlock(x, y, z, block);
         }
     }
 
@@ -109,29 +118,54 @@ public class WorldEditIntegration {
         private Level2(@Nullable EditSession.Stage stage, @Nonnull Actor actor, BukkitWorld world, Extent extent) {
             super(stage, actor, world, extent);
         }
-
         @Override
-        boolean setBlock(BlockPosition pos, RegionPosition regPos, RegionData regData, BlockVector3 vector, BaseBlock newBlock) {
-            return this.world.getBlock(vector).equals(newBlock) || super.setBlock(pos, regPos, regData, vector, newBlock);
+        public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BlockState newBlock) {
+        	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
+                if (newBlock.getMaterial().isAir()) {
+                    regData.unmark(pos);
+                } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key) && !this.world.getBlock(vector).equals(newBlock)) {
+                	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
+                }
+            }
+        }
+        
+        @Override
+        public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BaseBlock newBlock) {
+        	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
+                if (newBlock.getMaterial().isAir()) {
+                    regData.unmark(pos);
+                } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key) && !this.world.getBlock(vector).toBaseBlock().equals(newBlock)) {
+                	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
+                }
+            }
         }
     }
 
-    private class Level1
-    extends AbstractRegionExtent {
+    private class Level1 extends AbstractRegionExtent {
         private Level1(@Nullable EditSession.Stage stage, @Nonnull Actor actor, BukkitWorld world, Extent extent) {
             super(stage, actor, world, extent);
         }
-
+        
         @Override
-        boolean setBlock(BlockPosition pos, RegionPosition regPos, RegionData regData, BlockVector3 vector, BaseBlock newBlock) {
-            if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
+        public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BlockState newBlock) {
+        	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
                 if (newBlock.getMaterial().isAir()) {
                     regData.unmark(pos);
                 } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key)) {
-                    regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
+                	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
                 }
             }
-            return true;
+        }
+        
+        @Override
+        public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BaseBlock newBlock) {
+        	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
+                if (newBlock.getMaterial().isAir()) {
+                    regData.unmark(pos);
+                } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key)) {
+                	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
+                }
+            }
         }
     }
 }

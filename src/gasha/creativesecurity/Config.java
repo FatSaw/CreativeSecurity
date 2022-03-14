@@ -4,7 +4,6 @@ import gasha.creativesecurity.ChangeGameModeCommands;
 import gasha.creativesecurity.CreativeSecurityPlugin;
 import gasha.creativesecurity.Lazy;
 import gasha.creativesecurity.SqlConfig;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -31,12 +30,11 @@ public class Config {
     static Locale language = Locale.ENGLISH;
     static boolean enableMessageCooldown = true;
     static int messageCooldown = 3;
-    public static int worldEditIntegration = 3;
+    public static int worldEditIntegration = 1;
     static boolean dataLogEnabled = false;
     static boolean enableservershield = false;
     static EnumSet<Material> untrackedMaterials;
     static EnumSet<Material> immovableBlocks;
-    static List<String> blacklistpearl;
     static boolean checkItemPickup;
     static boolean checkCreativeDrop;
     static boolean checkSurvivalDrop;
@@ -338,7 +336,7 @@ public class Config {
             blockedCommands.put(gameMode, Config.nonEmptySet(sec.getStringList(gameMode.name().toLowerCase())));
         }
         Set<String> nonCreative = Config.nonEmptySet(sec.getStringList("non-creative"));
-        blockedCommands.entrySet().stream().filter(e -> e.getKey() != GameMode.CREATIVE).forEachOrdered(e -> ((Set)e.getValue()).addAll(nonCreative));
+        blockedCommands.entrySet().stream().filter(e -> e.getKey() != GameMode.CREATIVE).forEachOrdered(e -> ((Set<String>)e.getValue()).addAll(nonCreative));
         sec = Config.getOrCreateSection((ConfigurationSection)config, "blocked-items");
         blockedItemsIntoAnvil = Config.materialSet(logger, sec.getStringList("into-anvil"));
         blockedItemsCreativeSpawn = Config.materialSet(logger, sec.getStringList("creative-spawn"));
@@ -350,12 +348,11 @@ public class Config {
             ConfigurationSection toSec = toGm == null ? sec : Config.getOrCreateSection(sec, "to-" + toGm.name().toLowerCase());
             for (GameMode fromGm : gameModesWithNull) {
                 ConfigurationSection fromSec = fromGm == null ? toSec : Config.getOrCreateSection(toSec, "from-" + fromGm.name().toLowerCase());
-                changeGameModeHooks.computeIfAbsent(toGm, gm -> new HashMap(gameModesWithNull.length)).put(fromGm, new ChangeGameModeCommands(fromSec));
+                changeGameModeHooks.computeIfAbsent(toGm, gm -> new HashMap<GameMode, ChangeGameModeCommands> (gameModesWithNull.length)).put(fromGm, new ChangeGameModeCommands(fromSec));
             }
         }
         changeGameModeHooks.values().forEach(sub -> sub.values().removeIf(ChangeGameModeCommands::isEmpty));
         changeGameModeHooks.values().removeIf(Map::isEmpty);
-        blacklistpearl = config.getStringList("prevent-enderpearl-region");
         sec = Config.getOrCreateSection((ConfigurationSection)config, "persistence");
         jdbc = sec.getBoolean("jdbc", false);
         if (jdbc) {
@@ -384,7 +381,6 @@ public class Config {
 
     static {
         immovableBlocks = EnumSet.noneOf(Material.class);
-        blacklistpearl = new ArrayList<String>();
         checkItemPickup = true;
         checkCreativeDrop = true;
         checkSurvivalDrop = true;

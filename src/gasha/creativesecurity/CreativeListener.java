@@ -1,9 +1,6 @@
 package gasha.creativesecurity;
 
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import gasha.creativesecurity.BlockLocation;
 import gasha.creativesecurity.BlockPosition;
 import gasha.creativesecurity.Config;
@@ -1028,31 +1025,6 @@ public class CreativeListener implements Listener {
             }
         }
         return circleBlocks;
-    }
-
-    private boolean isWithinRegion(Location loc, List<String> regions) {
-        RegionManager manager = main.getWorldGuardHook().getRegionManager(loc.getWorld());
-        BlockVector3 ve = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
-        ApplicableRegionSet set = manager.getApplicableRegions(ve);
-        for (ProtectedRegion each : set) {
-            for (String region : regions) {
-                if (!each.getId().equalsIgnoreCase(region)) continue;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @EventHandler
-    public void onTeleport(PlayerTeleportEvent event) {
-        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
-            Location loc = event.getTo();
-            if (main.getWorldGuardHook().isInstalled() && this.isWithinRegion(loc, Config.blacklistpearl)) {
-                event.setCancelled(true);
-                event.getPlayer().teleport(event.getFrom());
-                Message.PREVENTED_ENDERPEARL.sendDenial((CommandSender)event.getPlayer(), new String[0][]);
-            }
-        }
     }
 
     @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
