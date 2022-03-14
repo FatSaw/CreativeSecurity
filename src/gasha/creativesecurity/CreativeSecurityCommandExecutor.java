@@ -1,5 +1,6 @@
 package gasha.creativesecurity;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
@@ -15,6 +16,8 @@ import gasha.creativesecurity.guis.GuiUtil;
 import gasha.creativesecurity.guis.invsee.EditSessionWrapper;
 import gasha.creativesecurity.guis.invsee.InvEditListener;
 import gasha.creativesecurity.guis.invsee.InvseeGui;
+import gasha.creativesecurity.hook.WorldEditIntegration;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -206,12 +209,17 @@ implements CommandExecutor {
                         Message.WORLD_EDIT_NOT_LOADED.sendInfo((CommandSender)player);
                         return false;
                     }
-                    Plugin fawePlugin = this.main.getServer().getPluginManager().getPlugin("FastAsyncWorldEdit");
-                    if (fawePlugin == null || !fawePlugin.isEnabled()) {
-                        Message.FAWE_NOT_LOADED.sendDenial(player, new String[0][]);
-                        return false;
+                    Region selection;
+                    if (!main.getServer().getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) {
+                    	if (main.getServer().getPluginManager().isPluginEnabled("WorldEdit")) {
+                    		selection = ((WorldEditPlugin)main.getServer().getPluginManager().getPlugin("WorldEdit")).getSession(player).getSelection();
+                    	} else {
+                    		Message.WORLDEDIT_NOT_LOADED.sendDenial(player, new String[0][]);
+                            return false;
+                    	}
+                    } else {
+                    	selection = WorldEditPlugin.getInstance().getSession(player).getSelection();
                     }
-                    Region selection = WorldEditPlugin.getInstance().getSession(player).getSelection();
                     if (selection == null) {
                         Message.WORLD_EDIT_NO_SELECTION.sendInfo(player);
                         return false;

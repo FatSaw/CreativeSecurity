@@ -33,7 +33,11 @@ import org.bukkit.World;
 
 public class WorldEditIntegration {
     private static final OfflinePlayer UNKNOWN = Bukkit.getOfflinePlayer((UUID)new UUID(0L, 0L));
-
+    private boolean fawe = false;
+    public WorldEditIntegration(boolean fawe) {
+    	this.fawe = fawe;
+    }
+    
     @Subscribe
     public void onEditSession(EditSessionEvent event) {
         String rawWorld = event.getWorld().getName();
@@ -58,8 +62,7 @@ public class WorldEditIntegration {
         }
     }
 
-    private abstract class AbstractRegionExtent
-    extends AbstractDelegateExtent {
+    private abstract class AbstractRegionExtent extends AbstractDelegateExtent {
         @Nullable
         final org.bukkit.entity.Player player;
         @Nonnull
@@ -94,7 +97,12 @@ public class WorldEditIntegration {
             } else if(block instanceof BlockState) {
             	setMarkBlock(pos, regionPosition, regionData,position, (BlockState)block);
             }
-        	return extent.setBlock(position.getX(), position.getY(), position.getZ(), block);
+            if(fawe) {
+            	return getExtent().setBlock(position.getBlockX(), position.getBlockY(), position.getBlockZ(), block);
+            } else {
+            	return getExtent().setBlock(position, block);
+            }
+        	
         }
             
         public <T extends BlockStateHolder<T>> boolean setBlock(int x, int y,int z, T block) throws WorldEditException {
@@ -109,7 +117,12 @@ public class WorldEditIntegration {
             } else if(block instanceof BlockState) {
             	setMarkBlock(pos, regionPosition, regionData,BlockVector3.at(x, y, z), (BlockState)block);
             }
-        	return extent.setBlock(x, y, z, block);
+            if(fawe) {
+            	return getExtent().setBlock(x, y, z, block);
+            } else {
+            	return getExtent().setBlock(BlockVector3.at(x, y, z), block);
+            }
+        	
         }
     }
 
@@ -121,7 +134,7 @@ public class WorldEditIntegration {
         @Override
         public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BlockState newBlock) {
         	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
-                if (newBlock.getMaterial().isAir()) {
+                if (newBlock.getBlockType().getMaterial().isAir()) {
                     regData.unmark(pos);
                 } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key) && !this.world.getBlock(vector).equals(newBlock)) {
                 	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
@@ -132,7 +145,7 @@ public class WorldEditIntegration {
         @Override
         public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BaseBlock newBlock) {
         	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
-                if (newBlock.getMaterial().isAir()) {
+                if (newBlock.getBlockType().getMaterial().isAir()) {
                     regData.unmark(pos);
                 } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key) && !this.world.getBlock(vector).toBaseBlock().equals(newBlock)) {
                 	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
@@ -149,7 +162,7 @@ public class WorldEditIntegration {
         @Override
         public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BlockState newBlock) {
         	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
-                if (newBlock.getMaterial().isAir()) {
+        		if (newBlock.getBlockType().getMaterial().isAir()) {
                     regData.unmark(pos);
                 } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key)) {
                 	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));
@@ -160,7 +173,7 @@ public class WorldEditIntegration {
         @Override
         public void setMarkBlock(BlockPosition pos, RegionPosition regPos, RegionData regData,BlockVector3 vector, BaseBlock newBlock) {
         	if (this.stage == EditSession.Stage.BEFORE_CHANGE) {
-                if (newBlock.getMaterial().isAir()) {
+        		if (newBlock.getBlockType().getMaterial().isAir()) {
                     regData.unmark(pos);
                 } else if (!this.player.hasPermission(PermissionKey.BYPASS_WORLDEDIT_BLOCK.key)) {
                 	regData.mark(pos, (OfflinePlayer)(this.player != null ? this.player : UNKNOWN));

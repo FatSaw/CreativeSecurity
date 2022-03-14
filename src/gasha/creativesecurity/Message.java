@@ -215,7 +215,7 @@ public enum Message {
     BLOCKED_COMMAND_INV_POTION("blocked-command-inv-potion"),
     BLOCKED_COMMAND_GAMEMODE("blocked-command-gamemode"),
     WORLD_EDIT_NOT_LOADED("world-edit-not-loaded"),
-    FAWE_NOT_LOADED("fawe-not-loaded"),
+    WORLDEDIT_NOT_LOADED("worldedit-not-loaded"),
     WORLD_EDIT_NO_SELECTION("world-edit-no-selection"),
     WORLD_EDIT_NO_MARKED("world-edit-no-marked"),
     WORLD_EDIT_UNMARKED_SUCCESS("world-edit-unmark-success"),

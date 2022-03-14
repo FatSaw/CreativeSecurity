@@ -192,7 +192,7 @@ blocked-command-inv-skull: §eВ вашем инвентаре есть пред
 blocked-command-inv-potion: §eВ вашем инвентаре есть предмет который запрещает использование этой команды§c!
 blocked-command-gamemode: §eВы не можете выполнить §c'{command}', находясь в режиме {gamemode}§c!
 world-edit-not-loaded: §eИнтеграция WorldEdit не загружена§c!
-fawe-not-loaded: §eFastAsyncWorldEdit не найден§c!
+worldedit-not-loaded: §eWorldEdit не найден§c!
 world-edit-no-selection: §eСначала вам нужно создать выделение WorldEdit§c!
 world-edit-no-marked: §eВ этом выборе нет отмеченных блоков§c!
 world-edit-unmark-success: §aВы успешно сняли отметку с §c{amount} §aблоков§c!

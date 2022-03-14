@@ -45,7 +45,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Entity;
@@ -165,6 +164,7 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             }
         });
         this.saveDefaultConfig();
+        /*
         List<String> dependencies = Arrays.asList("WorldEdit");
         for (String dependency : dependencies) {
             Plugin plugin = this.getServer().getPluginManager().getPlugin(dependency);
@@ -176,6 +176,7 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin((Plugin)this);
             return;
         }
+        */
         this.guiConfig = new GuiConfig();
         this.creativeListener = new CreativeListener();
         this.dataListener = new DataListener();
@@ -202,17 +203,12 @@ public class CreativeSecurityPlugin extends JavaPlugin {
         if (Config.worldEditIntegration > 0 && this.getServer().getPluginManager().isPluginEnabled("WorldEdit")) {
             try {
                 this.getLogger().info("Loading WorldEdit Integration");
-                this.worldEditIntegration = new WorldEditIntegration();
+                this.worldEditIntegration = new WorldEditIntegration(this.getServer().getPluginManager().isPluginEnabled("FastAsyncWorldEdit"));
                 WorldEdit.getInstance().getEventBus().register(this.worldEditIntegration);
             }
             catch (Throwable e) {
                 this.getLogger().log(Level.SEVERE, "Failed to load WorldEdit integration!", e);
             }
-        }
-        if (this.isResidenceIntegrationLoaded()) {
-            this.getLogger().info("Residence Integration Loaded");
-        } else {
-            this.getLogger().info("Residence not found");
         }
         dataLogger.config("Scanning loaded chunks...");
         this.getServer().getWorlds().parallelStream().flatMap(world -> Arrays.stream(world.getLoadedChunks())).forEach(chunk -> this.creativeListener.chunkLoaded((Chunk)chunk, false));
