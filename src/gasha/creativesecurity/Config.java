@@ -25,7 +25,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-
 public class Config {
     static boolean jdbc = false;
     static boolean validateEnumMessages = true;
@@ -34,14 +33,10 @@ public class Config {
     static int messageCooldown = 3;
     public static int worldEditIntegration = 3;
     static boolean dataLogEnabled = false;
-    static boolean disableservershield = false;
+    static boolean enableservershield = false;
     static EnumSet<Material> untrackedMaterials;
     static EnumSet<Material> immovableBlocks;
-    static boolean arrowmelon;
-    static boolean dropmelon;
-    static boolean wgmelon;
     static List<String> blacklistpearl;
-    static String melonsound;
     static boolean checkItemPickup;
     static boolean checkCreativeDrop;
     static boolean checkSurvivalDrop;
@@ -222,11 +217,13 @@ public class Config {
         messageCooldown = config.getInt("message-cooldown", 3);
         worldEditIntegration = config.getInt("worldedit-integration", 1);
         dataLogEnabled = config.getBoolean("debug-data", false);
-        disableservershield = config.getBoolean("disable-servershield", true);
+        enableservershield = config.getBoolean("enable-servershield", false);
         enableMessageCooldown = messageCooldown > 0;
         untrackedMaterials = Config.materialSet(logger, config.getStringList("untracked-materials"));
         untrackedMaterials.add(Material.FIRE);
         untrackedMaterials.add(Material.AIR);
+        untrackedMaterials.add(Material.CAVE_AIR);
+        untrackedMaterials.add(Material.VOID_AIR);
         immovableBlocks = Config.materialSet(logger, config.getStringList("immovable-blocks"));
         ConfigurationSection sec = Config.getOrCreateSection((ConfigurationSection)config, "check");
         checkItemPickup = sec.getBoolean("item-pickup", true);
@@ -358,11 +355,6 @@ public class Config {
         }
         changeGameModeHooks.values().forEach(sub -> sub.values().removeIf(ChangeGameModeCommands::isEmpty));
         changeGameModeHooks.values().removeIf(Map::isEmpty);
-        sec = Config.getOrCreateSection((ConfigurationSection)config, "more");
-        arrowmelon = sec.getBoolean("melon-arrow-destroy.enabled", false);
-        dropmelon = sec.getBoolean("melon-arrow-destroy.dropmelon", false);
-        wgmelon = sec.getBoolean("melon-arrow-destroy.worldguard", false);
-        melonsound = sec.getString("melon-arrow-destroy.sound", "nosound");
         blacklistpearl = config.getStringList("prevent-enderpearl-region");
         sec = Config.getOrCreateSection((ConfigurationSection)config, "persistence");
         jdbc = sec.getBoolean("jdbc", false);
@@ -392,11 +384,7 @@ public class Config {
 
     static {
         immovableBlocks = EnumSet.noneOf(Material.class);
-        arrowmelon = false;
-        dropmelon = false;
-        wgmelon = false;
         blacklistpearl = new ArrayList<String>();
-        melonsound = "";
         checkItemPickup = true;
         checkCreativeDrop = true;
         checkSurvivalDrop = true;

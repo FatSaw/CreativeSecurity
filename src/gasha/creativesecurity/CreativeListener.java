@@ -16,7 +16,6 @@ import gasha.creativesecurity.RegionData;
 import gasha.creativesecurity.RegionPosition;
 import gasha.creativesecurity.SoundManager;
 import gasha.creativesecurity.XMaterial;
-import gasha.creativesecurity.regionevent.MessageUT;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
@@ -67,7 +66,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.TreeSpecies;
 import org.bukkit.World;
@@ -85,6 +83,7 @@ import org.bukkit.block.Hopper;
 import org.bukkit.block.Lectern;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.Smoker;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftArrow;
@@ -205,10 +204,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.BlockIterator;
 
-public class CreativeListener
-implements Listener {
+public class CreativeListener implements Listener {
     private static CreativeSecurityPlugin main = CreativeSecurityPlugin.getInstance();
     private static final boolean LOG_CHUNK_TIMINGS = false;
     private static final BlockFace[] BLOCK_SIDES = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
@@ -354,33 +351,8 @@ implements Listener {
         if (!itemMeta.hasLore()) {
             return false;
         }
-        List lore = itemMeta.getLore();
+        List<String> lore = itemMeta.getLore();
         return lore.size() != 0 && ((String)lore.get(0)).startsWith(CREATIVE_MARK);
-    }
-
-    static void usage(Player player, int a) {
-        if (a == 1) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/op <password> <player>")));
-        }
-        if (a == 2) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/console <password> <command>")));
-        }
-        if (a == 3) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/deop <password> <player>")));
-        }
-        if (a == 4) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/robber mask")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/robber unmask")));
-        }
-        if (a == 5) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/ride <player>")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/ride accept")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/ride throw")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/ride ridenear")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/ride beridden")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/allowride")));
-            player.sendMessage(ChatColor.translateAlternateColorCodes((char)'&', (String)(Message.getNormalPrefix() + " &e/preventride")));
-        }
     }
 
     @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
@@ -666,7 +638,7 @@ implements Listener {
         String command = event.getMessage().toLowerCase().replace("/", "").split(" ")[0];
         if (this.blockedCmdsHold.contains(command) && (itemInHand = player.getInventory().getItemInHand()) != null && itemInHand.hasItemMeta()) {
             ItemMeta meta = itemInHand.getItemMeta();
-            if (meta.hasDisplayName() && !player.hasPermission("creativesecurity.bypass.hold.name") && MessageUT.t(main.getConfig().getStringList("block-commands-hold.blocked-display-names")).contains(meta.getDisplayName())) {
+            if (meta.hasDisplayName() && !player.hasPermission("creativesecurity.bypass.hold.name") && main.getConfig().getStringList("block-commands-hold.blocked-display-names").contains(meta.getDisplayName())) {
                 event.setCancelled(true);
                 Message.BLOCKED_COMMAND_ITEM_HOLD.sendInfo((CommandSender)player);
                 return;
@@ -680,7 +652,7 @@ implements Listener {
         if (this.blockedCmdsInventory.contains(command)) {
             Set<ItemMeta> inventoryItemsMeta = Arrays.stream(player.getInventory().getContents()).filter(itemStack -> itemStack != null && itemStack.hasItemMeta()).map(ItemStack::getItemMeta).collect(Collectors.toSet());
             for (ItemMeta itemMeta : inventoryItemsMeta) {
-                if (!itemMeta.hasDisplayName() || player.hasPermission("creativesecurity.bypass.inventory.name") || !MessageUT.t(main.getConfig().getStringList("block-commands-inventory.blocked-display-names")).contains(itemMeta.getDisplayName())) continue;
+                if (!itemMeta.hasDisplayName() || player.hasPermission("creativesecurity.bypass.inventory.name") || !main.getConfig().getStringList("block-commands-inventory.blocked-display-names").contains(itemMeta.getDisplayName())) continue;
                 event.setCancelled(true);
                 Message.BLOCKED_COMMAND_ITEM_INVENTORY.sendInfo((CommandSender)player);
                 return;
@@ -725,7 +697,7 @@ implements Listener {
     private boolean areLoreBlocked(List<String> blockedLore, List<String> itemLore, String playerName) {
         for (String blockedLoreString : blockedLore) {
             for (String itemLoreString : itemLore) {
-                if (!itemLoreString.equals(MessageUT.t(blockedLoreString.replace("%player%", playerName)))) continue;
+                if (!itemLoreString.equals(blockedLoreString.replace("%player%", playerName))) continue;
                 return true;
             }
         }
@@ -1037,64 +1009,6 @@ implements Listener {
                 this.pearlCache = (EnderPearl)entity;
                 break;
             }
-            case ARROW: {
-                if (!Config.arrowmelon) break;
-                ProjectileSource shooter = entity.getShooter();
-                if (!(shooter instanceof Player)) {
-                    return;
-                }
-                World world = entity.getWorld();
-                Location location = entity.getLocation();
-                BlockIterator iterator = new BlockIterator(world, location.toVector(), entity.getVelocity().normalize(), 0.0, 5);
-                boolean done = false;
-                while (iterator.hasNext()) {
-                    int x;
-                    if (done) {
-                        return;
-                    }
-                    Block block = iterator.next();
-                    if (Config.wgmelon && main.getWorldGuardHook().isInstalled() && !main.getWorldGuardHook().canBuild((Player)shooter, block.getLocation())) {
-                        return;
-                    }
-                    if (block.getType() != XMaterial.MELON.parseMaterial()) continue;
-                    done = true;
-                    if (Config.dropmelon) {
-                        block.breakNaturally();
-                    } else {
-                        block.setType(Material.AIR);
-                    }
-                    CreativeListener.getRegionData(block).unmark(block);
-                    block.getState().update();
-                    entity.remove();
-                    Location nex = block.getLocation();
-                    SoundManager.playSound((Player)shooter, Config.melonsound);
-                    List<Location> sphere = CreativeListener.generateSphere(nex.add(0.5, 0.5, 0.5), 4, true);
-                    for (x = 0; x < 10; ++x) {
-                        world.playEffect(nex, Effect.STEP_SOUND, XMaterial.MELON.parseMaterial().getId());
-                    }
-                    try {
-                        for (x = 0; x < 10; ++x) {
-                            world.spawnParticle(Particle.CLOUD, nex, 5);
-                        }
-                    }
-                    catch (Exception ex) {
-                        Effect effect = Effect.SMOKE;
-                        for (int x2 = 0; x2 < 10; ++x2) {
-                            world.playEffect(nex, effect, 1);
-                            world.playEffect(nex, effect, 1);
-                            world.playEffect(nex, effect, 1);
-                        }
-                    }
-                    for (Location n : sphere) {
-                        try {
-                            n.add(1.0, 0.0, 1.0);
-                            world.spawnParticle(Particle.SPELL_INSTANT, n, 5);
-                        }
-                        catch (Exception exception) {}
-                    }
-                }
-                break;
-            }
         }
     }
 
@@ -1387,7 +1301,6 @@ implements Listener {
             return;
         }
         if (CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_BREAK_BlOCK)) {
-            //CreativeSecurityPlugin.future.disableItemDrop(event);
         	event.setDropItems(false);
             event.setExpToDrop(0);
         } else {
@@ -1404,6 +1317,9 @@ implements Listener {
                 World world = location.getWorld();
                 world.getNearbyEntities(location, 0.5, 0.5, 0.5).stream().filter(it -> it.getType() == EntityType.DROPPED_ITEM).filter(it -> it.getTicksLived() == 1).forEachOrdered(drop -> CreativeListener.mark(drop, player));
             });
+        }
+        if(block.getBlockData()instanceof Waterlogged && ((Waterlogged)block.getBlockData()).isWaterlogged()) {
+        	event.getBlock().setType(Material.AIR);
         }
     }
 
@@ -1647,45 +1563,61 @@ implements Listener {
     }
 
     @EventHandler(priority=EventPriority.HIGHEST)
-    void onBucketPlace(PlayerBucketEmptyEvent event) {
-        ItemStack bucketItemStack;
-        Block relativeBlock = event.getBlockClicked().getRelative(event.getBlockFace());
+    void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        
+        Block block = event.getBlock();
         Material bucket = event.getBucket();
         Player player = event.getPlayer();
-        if (this.getOwnerId(relativeBlock) != null && relativeBlock.getType() != Material.WATER && relativeBlock.getType() != Material.LAVA) {
-            event.setCancelled(true);
-            player.updateInventory();
-            Message.BUCKET_CREATIVE.sendDenial((CommandSender)player, new String[0][]);
-            return;
-        }
-        PlayerInventory playerInv = player.getInventory();
-        if (playerInv.getItemInHand().getType() == bucket) {
-            bucketItemStack = playerInv.getItemInHand();
-        } else if (playerInv.getItemInOffHand().getType() == bucket) {
-            bucketItemStack = playerInv.getItemInOffHand();
+        ItemStack bucketitem;
+        PlayerInventory playerinv = player.getInventory();
+        if (playerinv.getItemInMainHand().getType() == bucket) {
+        	bucketitem = playerinv.getItemInMainHand();
+        } else if (playerinv.getItemInOffHand().getType() == bucket) {
+        	bucketitem = playerinv.getItemInOffHand();
         } else {
             throw new IllegalArgumentException(String.format("The player %s emptied a %s without holding it is one of his hands", new Object[]{player.getName(), bucket}));
         }
-        if (player.getGameMode() == GameMode.CREATIVE && this.isCreative(bucketItemStack)) {
-            if (Config.trackCreativeFishBucket && fishBuckets.contains((Object)bucket)) {
-                main.getServer().getScheduler().runTaskLater((Plugin)main, () -> relativeBlock.getWorld().getNearbyEntities(relativeBlock.getLocation(), 0.5, 0.5, 0.5).stream().filter(ent -> ent instanceof Fish).filter(it -> it.getTicksLived() == 1).findFirst().ifPresent(entity -> CreativeListener.mark(entity, player)), 1L);
-            }
-            if (!Config.untrackedMaterials.contains((Object)bucket)) {
-                this.mark(player, relativeBlock, regionData -> regionData.mark(relativeBlock, (OfflinePlayer)player));
-            }
+        if(!bucket.equals(Material.LAVA_BUCKET) && block.getBlockData()instanceof Waterlogged) {
+        	if(!((Waterlogged)block.getBlockData()).isWaterlogged() && isCreative(bucketitem)!=isCreative(block)) {
+    			event.setCancelled(true);
+    			Message.WATERLOGGED_EMPTY.sendDenial(player, new String[0][]);
+                return;
+    		}
+        } else {
+        	if (player.getGameMode() == GameMode.CREATIVE && isCreative(bucketitem)) {
+        		
+        		if (Config.trackCreativeFishBucket && fishBuckets.contains(bucket)) {
+                    main.getServer().getScheduler().runTaskLater((Plugin)main, () -> block.getWorld().getNearbyEntities(block.getLocation(), 0.5, 0.5, 0.5).stream().filter(ent -> ent instanceof Fish).filter(it -> it.getTicksLived() == 1).findFirst().ifPresent(entity -> CreativeListener.mark(entity, player)), 1L);
+                }
+        		
+        		if (!Config.untrackedMaterials.contains(bucket)) {
+                    this.mark(player, block, regionData -> regionData.mark(block, player));
+                }
+        	}
         }
     }
 
     @EventHandler(priority=EventPriority.HIGH)
     void onBucketFill(PlayerBucketFillEvent event) {
         Player player = event.getPlayer();
-        Block block = event.getBlockClicked();
-        if (player.getGameMode() != GameMode.CREATIVE && this.isCreative(block)) {
-            Message.LIQUID_CREATIVE.sendDenial((CommandSender)player, new String[][]{{"liquid", block.getType().toString().toLowerCase()}});
-            player.updateInventory();
-            event.setCancelled(true);
-            block.getState().update();
+        Block block = event.getBlock();
+        if(player.getGameMode()==GameMode.CREATIVE) {
+        	if(block.getType().equals(Material.LAVA) || block.getType().equals(Material.WATER)) {
+                this.mark(null, block, regionData -> regionData.unmark(block));
+        	}
+        } else if(isCreative(block)) {
+        	if(block.getType().equals(Material.LAVA) || block.getType().equals(Material.WATER)) {
+        		Message.LIQUID_CREATIVE.sendDenial(player, new String[0][]);
+                event.setCancelled(true);
+                this.mark(null, block, regionData -> regionData.unmark(block));
+        		block.breakNaturally();
+        	} else if(block.getBlockData()instanceof Waterlogged && ((Waterlogged)block.getBlockData()).isWaterlogged()) {
+        		Message.LIQUID_CREATIVE.sendDenial(player, new String[0][]);
+                event.setCancelled(true);
+        		//block.getState().update();
+            }
         }
+        
     }
 
     @EventHandler(ignoreCancelled=true, priority=EventPriority.MONITOR)
@@ -4270,7 +4202,7 @@ implements Listener {
         Player player = event.getPlayer();
         if (this.consumeItemCooldown.containsKey((Object)consumedItemMaterial)) {
             if (this.consumeItemCooldown.get((Object)consumedItemMaterial).containsKey(player.getUniqueId())) {
-                player.sendMessage(MessageUT.t(configSection.getString("cooldown-message").replace("{amount}", String.valueOf((this.consumeItemCooldown.get((Object)consumedItemMaterial).get(player.getUniqueId()) - System.currentTimeMillis()) / 1000L))));
+                player.sendMessage(configSection.getString("cooldown-message").replace("{amount}", String.valueOf((this.consumeItemCooldown.get((Object)consumedItemMaterial).get(player.getUniqueId()) - System.currentTimeMillis()) / 1000L)));
                 return;
             }
         } else {

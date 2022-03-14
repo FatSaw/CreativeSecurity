@@ -1,7 +1,6 @@
 package gasha.creativesecurity.files;
 
 import gasha.creativesecurity.CreativeSecurityPlugin;
-import gasha.creativesecurity.regionevent.MessageUT;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +35,11 @@ public class YAMLDataStorage {
     }
 
     public String getString(String path) {
-        return MessageUT.t(this.getConfig().getString(path));
+        return this.getConfig().getString(path);
     }
 
     public List<String> getStringList(String path) {
-        return MessageUT.t(this.getConfig().getStringList(path));
+        return getConfig().getStringList(path);
     }
 
     public void addToList(String path, String value) {

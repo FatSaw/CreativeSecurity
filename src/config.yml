@@ -7,7 +7,7 @@ message-cooldown: 3
 
 infoitem: BLAZE_ROD
 # The date format. More info: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-infoitemDateFormat: "MM/dd/yyyy"
+infoitemDateFormat: "dd/MM/yyyy"
 
 cooldown-on-checking-placed: false
 
@@ -22,8 +22,8 @@ worldedit-integration: 1
 # Enable the data.log file
 debug-data: false
 
-# Panilla based nbt filter
-disable-servershield: true
+# If enabled only vanilla items allowed
+enable-servershield: false
 
 disable-gamemode-changes: false
 
@@ -162,100 +162,31 @@ check:
 # Chat help menu. Output of the command "/creativesecurity"
 helpmenu:
   header:
-  - '&a&l&m---------------------------------------------'
-  - '                    &c&l  CreativeSecurity'
+  - '§a§l§m---------------------------------------------------------'
+  - '                    §c§l  CreativeSecurity'
   - ''
   footer:
-  - '&a&l&m---------------------------------------------'
-  previous-page: "&c&l[&bPrevious Page&c&l]"
-  buttons-spacer: "  &7(&c{current}&7/&c{total}&7)  "
-  next-page: "&c&l[&bNext Page&c&l]"
+  - '§a§l§m---------------------------------------------------------'
+  previous-page: "§c§l[§bПредыдущая страница§c§l]"
+  buttons-spacer: "  §7(§c{current}§7/§c{total}§7)  "
+  next-page: "§c§l[§bСледующая страница§c§l]"
   pages:
     1:
-    - '&c/&ecreativesecurity reload'
-    - '&c/&ecreativesecurity unmarkblocks'
-    - '&c/&ecreativesecurity cmdblock'
-    - '&c/&ecreativesecurity status &7[offline person]'
-    - '&c/&ecreativesecurity invsee &7[person] (gamemode) (inventory)'
-    - '&c/&ecreativesecurity clear'
-    - '&c/&emark'
-    - '&c/&eop'
-    - '&c/&edeop'
-    - '&c/&econsole'
-    - '&c/&egmset'
-    - '&c/&egmgui'
-    - '&c/&egmc'
-    - '&c/&egms'
+    - '§c/§ecreativesecurity reload'
+    - '§c/§ecreativesecurity unmarkblocks'
+    - '§c/§ecreativesecurity cmdblock'
+    - '§c/§ecreativesecurity status §7[игрок]'
+    - '§c/§ecreativesecurity invsee §7[игрок] (режим игры) (номер инвентаря)'
+    - '§c/§ecreativesecurity clear §7[игрок] [режим игры] [номер инвентаря]'
+    - '§c/§emark'
+    - '§c/§eunmark'
+    - '§c/§egmset'
+    - '§c/§egmgui'
+    - '§c/§egmc'
+    - '§c/§egms'
     - ''
-    2:
-    - '&c/&ebounty list'
-    - '&c/&ebounty add &7[person] [amount]'
-    - '&c/&ebounty remove &7[person] [amount]'
-    - '&c/&ebounty set &7[person] [amount]'
-    - '&c/&ebounty reset &7[person] [amount]'
-    - '&c/&ebounty find &7[person]'
-    - '&c/&ecuffedlist'
-    - '&c/&eride &7[person]'
-    - '&c/&eride accept'
-    - '&c/&eride throw'
-    - '&c/&eride ridenear'
-    - '&c/&eride beridden'
-    - '&c/&efreeze &7[person]'
-    - '&c/&eunfreeze &7[person]'
+    - '§bПлагин создан §aGasha§b, обновлён §aBomb'
     - ''
-    3:
-    - '&c/&ecops duty &7[person]'
-    - '&c/&ecops invsave'
-    - '&c/&ecops list'
-    - '&c/&ewanted list'
-    - '&c/&ewanted add &7[person] [level]'
-    - '&c/&ewanted decrease &7[person] [level]'
-    - '&c/&ewanted remove &7[person] [level]'
-    - '&c/&ewanted set &7[person] [level]'
-    - '&c/&ewanted reset &7[person] [level]'
-    - '&c/&ecops trace &7[person]'
-    - '&c/&ecops search &7[person]'
-    - '&c/&ecuff &7[person]'
-    - '&c/&euncuff &7[person]'
-    - '&c/&eteaser &7[person]'
-    - ''
-    4:
-    - '&c/&ecreativesecurity clear'
-    - '&c/&ecreativesecurity clear &7[person] [gamemode] [inventory]'
-    - '&c/&epaymyfine'
-    - '&c/&epayfinefor &7[person]'
-    - '&c/&etie &7[person]'
-    - '&c/&euntie &7[person]'
-    - '&c/&erelease &7[person]'
-    - '&c/&erob &7[person]'
-    - '&c/&estealfrom &7[person]'
-    - '&c/&estealmorefrom &7[person]'
-    - '&c/&estealallfrom &7[person]'
-    - '&c/&emyinfo'
-    - '&c/&echeckinfo &7[person]'
-    - '&c/&eeditinfo &7[person] [placeholder]'
-    - ''
-    5:
-    - '&c/&ecops'
-    - '&c/&ewanted'
-    - '&c/&ebounty'
-    - '&c/&ebp'
-    - '&c/&ebackpacks'
-    - '&c/&ebackpacks &7[size] [number]'
-    - '&c/&ebackpacks &7[size] [number] [player]'
-    - '&c/&ebackpacks &7[size] [number] [player] [clear]'
-    - ''
-    - '&fYou can find more informations on plugin wikipedia&C:'
-    - '&6&nhttps://www.spigotmc.org/wiki/creativesecurity'
-    - ''
-    - '&bAlso if you have any issues or any questions feel free'
-    - '&bTo send me message on spigot anytime &c(&3My name is &aGasha&c)'
-    - ''
-sub-helpmenus:
-  # The helpmenu page containing bounty commands
-  bounty: 2
-  cops: 3
-  wanted: 3
 
 # Determines what happens with the experience and the active inventory when a player dies...
 # Can be disabled by the setting "check.player-death" above.
@@ -747,8 +678,7 @@ blocked-items:
   #
   # Can be bypassed with:
   # creativesecurity.use.blockedcreative
-  creative-usage:
-  - BUCKET
+  creative-usage: []
 
 # These blocks won't be pushable by pistons
 immovable-blocks:
@@ -887,23 +817,6 @@ prevent-enderpearl-region:
 - "disabledregion1"
 - "parkour"
 
-more:
-  # permission to use creativesecurity.use.oppassword
-  op-security:
-    enabled: false
-    password: secretpassword
-
-  # permission to use creativesecurity.use.consoleingame
-  console-ingame:
-    enabled: false
-    password: secretpassword2
-
-  melon-arrow-destroy:
-    enabled: false
-    sound: BLOCK_GLASS_BREAK
-    dropmelon: false
-    worldguard: true
-
 # More instructions and information you can find on plugin wikipedia, there is infinity abilities that you can do with these
 key-binding:
 #  # Format without shift: KEY     (example: 1)
@@ -932,7 +845,7 @@ block-commands-hold:
   # Bypass permission: creativesecurity.bypass.hold.lore
   # Placeholder: %player% -> Command executor's name
   blocked-lores:
-  - "§7Креативный итедмет §c%player%"
+  - "§7Креативный предмет §c%player%"
   used-for-commands:
   - "sell"
   - "rename"
@@ -942,19 +855,16 @@ block-commands-hold:
 # Prevent players from executing certain commands while they have items with specific display name and lore in their current inventory
 block-commands-inventory:
   # Bypass permission: creativesecurity.bypass.inventory.name
-  blocked-display-names:
-  - "Creative-Item"
+  blocked-display-names: []
   # Bypass permission: creativesecurity.bypass.inventory.lore
   # Placeholder: %player% -> Command executor's name
   blocked-lores:
-  - "No sell"
-  - "%player%'s diamond"
+  - "§7Креативный предмет §c%player%"
   used-for-commands:
   - "sell all"
 
 block-commands-inventory-items:
-  used-for-commands:
-  - "tps"
+  used-for-commands: []
   # etc.
   items:
     '1':
@@ -980,7 +890,7 @@ player-item-consume-control:
     enabled: true
     # Cooldown in seconds (set 0 to disable)
     cooldown: 10
-    cooldown-message: "&cВы должны подождать {amount} секунд чтобы сьесть &bзолотое яблоко &cснова"
+    cooldown-message: "§cВы должны подождать {amount} секунд чтобы сьесть §bзолотое яблоко §cснова"
     # The food level is measured in half-shanks in the hunger bar. Whole numbers please.
     food-level: 4
     saturation: 9.6
@@ -993,7 +903,7 @@ player-item-consume-control:
   enchanted-golden-apple:
     enabled: true
     cooldown: 30
-    cooldown-message: "&cВы должны подождать {amount} секунд чтобы сьесть &5зачарованое золотое яблоко &cснова"
+    cooldown-message: "§cВы должны подождать {amount} секунд чтобы сьесть §5зачарованое золотое яблоко §cснова"
     food-level: 4
     saturation: 9.6
     effects:

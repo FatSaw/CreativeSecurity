@@ -15,12 +15,14 @@ import org.bukkit.entity.Player;
 public class WorldGuardHook {
     private WorldGuardPlugin worldGuardPlugin;
     private WorldGuardPlatform worldGuard;
-    private boolean installed;
+    private boolean installed = false;
 
     public WorldGuardHook() {
-    	this.worldGuard = WorldGuard.getInstance().getPlatform();
-        this.worldGuardPlugin = (WorldGuardPlugin)Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-        this.installed = this.worldGuardPlugin != null;
+    	this.worldGuardPlugin = (WorldGuardPlugin)Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+    	if (worldGuardPlugin != null && worldGuardPlugin.isEnabled()) {
+    		this.worldGuard = WorldGuard.getInstance().getPlatform();
+            this.installed = true;
+    	}
     }
 
     public boolean isInstalled() {

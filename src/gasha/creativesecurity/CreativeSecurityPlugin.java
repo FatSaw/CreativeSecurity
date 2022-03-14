@@ -1,5 +1,6 @@
 package gasha.creativesecurity;
 
+import com.ruinscraft.panilla.ServerShield;
 import com.sk89q.worldedit.WorldEdit;
 import gasha.creativesecurity.AdditionalInventory;
 import gasha.creativesecurity.AntiCommandsSuggestion;
@@ -14,16 +15,12 @@ import gasha.creativesecurity.PlayerData;
 import gasha.creativesecurity.RegionData;
 import gasha.creativesecurity.RegionPosition;
 import gasha.creativesecurity.SqlConfig;
-import gasha.creativesecurity.consolefilter.ConsoleFilter;
 import gasha.creativesecurity.guis.GuiConfig;
 import gasha.creativesecurity.guis.GuiListener;
 import gasha.creativesecurity.guis.inventories.GmSelectorGui;
 import gasha.creativesecurity.guis.invsee.InvEditListener;
 import gasha.creativesecurity.hook.WorldEditIntegration;
 import gasha.creativesecurity.hook.WorldGuardHook;
-import gasha.creativesecurity.regionevent.EventManager;
-import gasha.creativesecurity.regionevent.MessageUT;
-import me.bomb.servershield.ServerShield;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,7 +142,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
 
     public void onEnable() {
         instance = this;
-        ((Logger)LogManager.getRootLogger()).addFilter((Filter)new ConsoleFilter(this));
         CreativeListener.load();
         ConfigurationSerialization.registerClass(PlayerData.class);
         ConfigurationSerialization.registerClass(AdditionalInventory.class);
@@ -185,7 +181,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin((Plugin)this);
             return;
         }
-        this.getServer().getPluginManager().registerEvents((Listener)new EventManager(), (Plugin)this);
         this.guiConfig = new GuiConfig();
         this.worldGuardHook = new WorldGuardHook();
         this.creativeListener = new CreativeListener();
@@ -203,14 +198,10 @@ public class CreativeSecurityPlugin extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents((Listener)this.creativeListener, (Plugin)this);
         this.getServer().getPluginManager().registerEvents((Listener)new GuiListener(this, this.dataListener), (Plugin)this);
         this.getServer().getPluginManager().registerEvents((Listener)new InvEditListener(this.guiConfig, this.dataListener), (Plugin)this);
-        if (Bukkit.getBukkitVersion().contains("1.8")) {
-            this.getLogger().info("Can't register KeyBinds, you server version doesn't support them");
-        } else {
-            this.getServer().getPluginManager().registerEvents((Listener)new KeyBinding(this), (Plugin)this);
-            this.getLogger().info("KeyBinds loaded");
-        }
+        this.getServer().getPluginManager().registerEvents((Listener)new KeyBinding(this), (Plugin)this);
+        this.getLogger().info("KeyBinds loaded");
         this.getCommand("creativesecurity").setExecutor((CommandExecutor)this.commandExecutor);
-        if(!Config.disableservershield) {
+        if(Config.enableservershield) {
         	this.servershield = new ServerShield(this);
         	this.getLogger().info("ServerShield loaded");
         }
@@ -250,10 +241,6 @@ public class CreativeSecurityPlugin extends JavaPlugin {
 
     public void reloadConfig() {
         super.reloadConfig();
-        EventManager.eventconfig.reload();
-        ConsoleFilter.fc.reload();
-        EventManager.reload();
-        ConsoleFilter.setup();
         Config.load();
         this.creativeListener.reload();
         this.messages = Message.load();
@@ -415,7 +402,7 @@ public class CreativeSecurityPlugin extends JavaPlugin {
                 if (args.length > 0) {
                     Player target = Bukkit.getPlayer((String)args[0]);
                     if (target == null) {
-                        player.sendMessage(MessageUT.t(this.messages.getString("gmset-target-offline").replace("{target}", args[0])));
+                        player.sendMessage(messages.getString("gmset-target-offline").replace("{target}", args[0]));
                         return false;
                     }
                     if (args.length > 1) {

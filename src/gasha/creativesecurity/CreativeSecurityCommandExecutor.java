@@ -15,8 +15,6 @@ import gasha.creativesecurity.guis.GuiUtil;
 import gasha.creativesecurity.guis.invsee.EditSessionWrapper;
 import gasha.creativesecurity.guis.invsee.InvEditListener;
 import gasha.creativesecurity.guis.invsee.InvseeGui;
-import gasha.creativesecurity.regionevent.EventManager;
-import gasha.creativesecurity.regionevent.MessageUT;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,18 +68,18 @@ implements CommandExecutor {
     void reload() {
         this.maxCmdBlockRadius = this.main.getConfig().getInt("cmdblock-max-radius");
         this.helpMenu = new HashMap<Integer, List<Object>>();
-        List<String> header = MessageUT.t(this.main.getConfig().getStringList("helpmenu.header"));
-        List<String> footer = MessageUT.t(this.main.getConfig().getStringList("helpmenu.footer"));
-        String previousStr = MessageUT.t(this.main.getConfig().getString("helpmenu.previous-page"));
-        String nextStr = MessageUT.t(this.main.getConfig().getString("helpmenu.next-page"));
-        String separator = MessageUT.t(this.main.getConfig().getString("helpmenu.buttons-spacer"));
+        List<String> header = main.getConfig().getStringList("helpmenu.header");
+        List<String> footer = main.getConfig().getStringList("helpmenu.footer");
+        String previousStr = main.getConfig().getString("helpmenu.previous-page");
+        String nextStr = main.getConfig().getString("helpmenu.next-page");
+        String separator = main.getConfig().getString("helpmenu.buttons-spacer");
         Set<String> pagesIds = this.main.getConfig().getConfigurationSection("helpmenu.pages").getKeys(false);
         int pagesAmount = pagesIds.stream().mapToInt(Integer::valueOf).max().getAsInt();
         for (String key : pagesIds) {
             ComponentBuilder builder;
             int pageNumber = Integer.valueOf(key);
             ArrayList<Object> page = new ArrayList<Object>(header);
-            page.addAll(MessageUT.t(this.main.getConfig().getStringList("helpmenu.pages." + key)));
+            page.addAll(main.getConfig().getStringList("helpmenu.pages." + key));
             if (pageNumber == 1) {
                 builder = new ComponentBuilder(String.format("%1$" + previousStr.length() + "s", ""));
             } else {
@@ -114,64 +112,6 @@ implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (alias.equalsIgnoreCase("creativesecurity")) {
             if (args.length >= 1) {
-                if (args[0].equalsIgnoreCase("cmdblock")) {
-                    if (!this.isAPlayer(sender)) {
-                        return false;
-                    }
-                    Player player = (Player)sender;
-                    if (!Message.hasPermission((Permissible)player, "creativesecurity.cmd.cmdblock")) {
-                        return false;
-                    }
-                    if (args.length < 3) {
-                        Message.CMDBLOCK_USAGE.sendInfo((CommandSender)player);
-                        return false;
-                    }
-                    String radiusInput = args[1];
-                    if (!radiusInput.matches("^(?:[1-9]|\\d\\d\\d*)$")) {
-                        Message.CMDBLOCK_INVALID_RADIUS.sendDenial((CommandSender)player, new String[][]{{"input", radiusInput}});
-                        return false;
-                    }
-                    int radius = Integer.valueOf(radiusInput);
-                    if (radius > this.maxCmdBlockRadius) {
-                        Message.CMDBLOCK_TOOBIG_RADIUS.sendDenial((CommandSender)player, new String[][]{{"max", String.valueOf(this.maxCmdBlockRadius)}});
-                        return false;
-                    }
-                    Location radiusCenter = player.getLocation();
-                    String radiusWorld = radiusCenter.getWorld().getName();
-                    String playerName2 = player.getName();
-                    List<Player> nearPlayers = this.main.getServer().getOnlinePlayers().stream().filter(Objects::nonNull).map(p -> p).filter(onlinePlayer -> !onlinePlayer.getName().equals(playerName2)).filter(onlinePlayer -> onlinePlayer.getWorld().getName().equals(radiusWorld)).filter(onlinePlayer -> onlinePlayer.getLocation().distance(radiusCenter) <= (double)radius).collect(Collectors.toList());
-                    if (nearPlayers.isEmpty()) {
-                        Message.CMDBLOCK_NO_TARGETS.sendInfo((CommandSender)player);
-                    } else {
-                        CharSequence[] cmdInput = Arrays.copyOfRange(args, 2, args.length);
-                        String rawCmd = String.join((CharSequence)" ", cmdInput);
-                        List<String> targetsNames = nearPlayers.stream().map(OfflinePlayer::getName).collect(Collectors.toList());
-                        String replace = "";
-                        if (rawCmd.contains("@a")) {
-                            replace = "@a";
-                        } else if (rawCmd.contains("@p")) {
-                            replace = "@p";
-                            Map<Player,Double> distances = nearPlayers.stream().collect(Collectors.toMap(Function.identity(), p -> p.getLocation().distance(radiusCenter)));
-                            Double minDistance = distances.values().stream().mapToDouble(Double::doubleValue).min().getAsDouble();
-                            Player nearestPlayer = distances.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), minDistance)).map(Map.Entry::getKey).findFirst().get();
-                            targetsNames = Collections.singletonList(nearestPlayer.getName());
-                        } else if (rawCmd.contains("@r")) {
-                            replace = "@r";
-                            int rnd = this.random.nextInt(nearPlayers.size());
-                            targetsNames = Collections.singletonList(((Player)nearPlayers.get(rnd)).getName());
-                        }
-                        if (replace.isEmpty()) {
-                            Message.CMDBLOCK_INVALID_CMD.sendError((CommandSender)player);
-                        } else {
-                            ArrayList<String> commands = new ArrayList<String>();
-                            String finalReplace = replace;
-                            targetsNames.forEach(target -> commands.add(rawCmd.replace(finalReplace, (CharSequence)target)));
-                            commands.forEach(((Player)player)::performCommand);
-                            Message.CMDBLOCK_SUCCESS.sendInfo((CommandSender)player, new String[][]{{"amount", String.valueOf(commands.size())}});
-                        }
-                    }
-                    return true;
-                }
                 if (args[0].equalsIgnoreCase("clear")) {
                     if (!this.isAPlayer(sender)) {
                         return false;
@@ -250,9 +190,8 @@ implements CommandExecutor {
                     this.main.getServer().getWorlds().parallelStream().flatMap(world -> Arrays.stream(world.getLoadedChunks())).forEach(this.creativeListener::chunkUnloaded);
                     this.main.saveDefaultConfig();
                     this.main.reloadConfig();
-                    EventManager.reload();
                     this.main.getServer().getWorlds().parallelStream().flatMap(world -> Arrays.stream(world.getLoadedChunks())).forEach(chunk -> this.creativeListener.chunkLoaded((Chunk)chunk, false));
-                    sender.sendMessage(Message.RELOAD_SUCCESS.applyArgs(new StringBuilder(), new String[0][]).toString());
+                    sender.sendMessage(Message.RELOAD_SUCCESS.getText());
                 } else if (args[0].equalsIgnoreCase("version")) {
                     Message.VERSION_INFO.sendInfo(sender, new String[]{"cs_ver", this.main.getDescription().getVersion()}, new String[]{"server_ver", Bukkit.getVersion()});
                 } else if (args[0].equalsIgnoreCase("unmarkblocks")) {
@@ -273,8 +212,6 @@ implements CommandExecutor {
                         return false;
                     }
                     Region selection = WorldEditPlugin.getInstance().getSession(player).getSelection();
-                    //FawePlayer fawePlayer = FaweAPI.wrapPlayer(player);
-                    //Region selection = fawePlayer.getSelection();
                     if (selection == null) {
                         Message.WORLD_EDIT_NO_SELECTION.sendInfo(player);
                         return false;

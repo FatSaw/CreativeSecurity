@@ -1,11 +1,11 @@
 name: CreativeSecurity
 main: gasha.creativesecurity.CreativeSecurityPlugin
-version: 666
+version: 1.15.2.1
 author: Gasha
 
 api-version: 1.13
 
-softdepend: [FastAsyncWorldEdit, WorldEdit, WorldGuard, Residence]
+softdepend: [FastAsyncWorldEdit, WorldEdit, WorldGuard]
 
 permissions:
   creativesecurity.*:
@@ -39,7 +39,6 @@ permissions:
       creativesecurity.bypass.worldedit.*: true
       creativesecurity.bypass.placecooldown: true
       creativesecurity.bypass.invsee: true
-      creativesecurity.bypass.sameip: true
       creativesecurity.bypass.tabsuggest: true
       creativesecurity.bypass.placeonframes: true
       creativesecurity.bypass.preventride: true
@@ -784,7 +783,6 @@ permissions:
       creativesecurity.cmd.gmgui: true
       creativesecurity.cmd.unmarkblocks: true
       creativesecurity.cmd.invsee: true
-      creativesecurity.cmd.cmdblock: true
       creativesecurity.cmd.status: true
       
   creativesecurity.cmd.mark:
