@@ -2,7 +2,7 @@ package com.ruinscraft.panilla;
 
 import java.util.UUID;
 
-import net.minecraft.server.v1_15_R1.IChatBaseComponent;
+import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 
 class NbtCheck_EntityTag extends NbtCheck {
 

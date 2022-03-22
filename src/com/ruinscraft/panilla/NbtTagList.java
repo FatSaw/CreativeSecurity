@@ -1,6 +1,6 @@
 package com.ruinscraft.panilla;
 
-import net.minecraft.server.v1_15_R1.NBTTagList;
+import net.minecraft.server.v1_16_R3.NBTTagList;
 
 class NbtTagList {
 

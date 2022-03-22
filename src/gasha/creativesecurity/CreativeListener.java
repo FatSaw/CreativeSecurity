@@ -1,6 +1,5 @@
 package gasha.creativesecurity;
 
-import com.sk89q.worldedit.math.BlockVector3;
 import gasha.creativesecurity.BlockLocation;
 import gasha.creativesecurity.BlockPosition;
 import gasha.creativesecurity.Config;
@@ -46,15 +45,16 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_15_R1.EntityArrow;
-import net.minecraft.server.v1_15_R1.EntityArrow.PickupStatus;
+import net.minecraft.server.v1_16_R3.EntityArrow;
+import net.minecraft.server.v1_16_R3.EntityArrow.PickupStatus;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Difficulty;
 import org.bukkit.DyeColor;
@@ -83,7 +83,7 @@ import org.bukkit.block.Smoker;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftArrow;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArrow;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Donkey;
@@ -211,7 +211,9 @@ public class CreativeListener implements Listener {
     private static final String KEY_DELAY_ENDERPEARL_SURVIVAL = "delay-pearl-survival";
     private static final String KEY_DELAY_ENDERPEARL_CREATIVE = "delay-pearl-creative";
     private static final String KEY_REGION_DATA = "region-data";
-    private static final String CREATIVE_MARK = "" + (Object)ChatColor.AQUA + (Object)ChatColor.AQUA + (Object)ChatColor.AQUA + (Object)ChatColor.BOLD + (Object)ChatColor.RED + (Object)ChatColor.RESET;
+    //private static final String CREATIVE_MARK = "" + ChatColor.AQUA + ChatColor.AQUA + ChatColor.AQUA + ChatColor.BOLD + ChatColor.RED + ChatColor.RESET;
+    private static final String CREATIVE_MARK = "§4 ";
+    //private static final String CREATIVE_MARK = "" + ChatColor.of("#abcdef");
     Set<UUID> logBlockBreak = new HashSet<UUID>(1);
     private WeakReference<Player> armorStandPlacer = null;
     private WeakReference<Egg> eggHit = null;
@@ -349,7 +351,7 @@ public class CreativeListener implements Listener {
             return false;
         }
         List<String> lore = itemMeta.getLore();
-        return lore.size() != 0 && ((String)lore.get(0)).startsWith(CREATIVE_MARK);
+        return lore.size() != 0 && (lore.get(0)).startsWith(CREATIVE_MARK);
     }
 
     @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
@@ -2768,9 +2770,6 @@ public class CreativeListener implements Listener {
         }
         EntityType type = entity.getType();
         switch (type) {
-            case PIG_ZOMBIE: {
-                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_ZOMBIE_PIGMAN);
-            }
             case GIANT: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_BOSS_GIANT);
             }
@@ -2798,9 +2797,6 @@ public class CreativeListener implements Listener {
             case SLIME: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_SLIME);
             }
-            case GHAST: {
-                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_GHAST);
-            }
             case ENDERMAN: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_ENDERMAN);
             }
@@ -2809,12 +2805,6 @@ public class CreativeListener implements Listener {
             }
             case SILVERFISH: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_SILVERFISH);
-            }
-            case BLAZE: {
-                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_BLAZE);
-            }
-            case MAGMA_CUBE: {
-                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_MAGMACUBE);
             }
             case WITHER: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_BOSS_WITHER);
@@ -2878,9 +2868,6 @@ public class CreativeListener implements Listener {
             }
             case SKELETON: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_SKELETON);
-            }
-            case WITHER_SKELETON: {
-                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_SKELETON_WITHER);
             }
             case STRAY: {
                 return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_SKELETON_STRAY);
@@ -2948,6 +2935,9 @@ public class CreativeListener implements Listener {
             case PANDA: {
             	return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_ANIMAL_PANDA);
             }
+            case STRIDER: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_ANIMAL_STRIDER);
+            }
             case PHANTOM: {
             	return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_PHANTOM);
             }
@@ -2974,6 +2964,33 @@ public class CreativeListener implements Listener {
             }
             case WANDERING_TRADER: {
             	return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_WANDERING_TRADER);
+            }
+            case WITHER_SKELETON: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_SKELETON_WITHER);
+            }
+            case BLAZE: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_BLAZE);
+            }
+            case MAGMA_CUBE: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_MAGMACUBE);
+            }
+            case GHAST: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_GHAST);
+            }
+            case HOGLIN: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_HOGLIN);
+            }
+            case PIGLIN: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_PIGLIN);
+            }
+            case PIGLIN_BRUTE: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_PIGLIN_BRUTE);
+            }
+            case ZOGLIN: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_ZOGLIN);
+            }
+            case ZOMBIFIED_PIGLIN: {
+                return CreativeListener.check((HumanEntity)player, PermissionKey.BYPASS_DAMAGE_MOB_ZOMBIFIED_PIGLIN);
             }
             default:
             case UNKNOWN: {
@@ -4064,16 +4081,17 @@ public class CreativeListener implements Listener {
     }
 
     static void mark(ItemStack stack, HumanEntity player, String[] ... extraArgs) {
-        if (Config.untrackedMaterials.contains((Object)stack.getType())) {
+        if (Config.untrackedMaterials.contains(stack.getType())) {
             return;
         }
         ItemMeta meta = stack.getItemMeta();
-        List previousLore = meta.hasLore() ? meta.getLore() : Collections.emptyList();
-        ArrayList<String> newLore = new ArrayList<String>(previousLore.size() + 1);
+        List<String> previousLore = meta.hasLore() ? meta.getLore() : Collections.emptyList();
+        List<String> newLore = new ArrayList<String>(previousLore.size() + 1);
         newLore.add(CREATIVE_MARK + Message.ITEM_MARK.applyArgs(player, extraArgs));
-        newLore.addAll(previousLore);
-        if (newLore.size() >= 2 && ((String)newLore.get(1)).startsWith(CREATIVE_MARK)) {
-            newLore.remove(1);
+        for(String lorestring : previousLore) {
+        	if(lorestring.length()<CREATIVE_MARK.length() || !lorestring.substring(0,CREATIVE_MARK.length()).equals(CREATIVE_MARK)) {
+        		newLore.add(lorestring);
+        	}
         }
         meta.setLore(newLore);
         stack.setItemMeta(meta);
