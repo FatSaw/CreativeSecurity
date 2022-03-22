@@ -1,6 +1,6 @@
 name: CreativeSecurity
 main: gasha.creativesecurity.CreativeSecurityPlugin
-version: 1.15.2.1
+version: 1.16.5.2
 author: Gasha
 
 api-version: 1.13
@@ -278,6 +278,7 @@ permissions:
       creativesecurity.bypass.damage.animal.cat: true
       creativesecurity.bypass.damage.animal.fox: true
       creativesecurity.bypass.damage.animal.panda: true
+      creativesecurity.bypass.damage.animal.strider: true
 
   creativesecurity.bypass.damage.animal.horse.donkey:
     description: Allows to damage donkeys in creative mode
@@ -341,6 +342,9 @@ permissions:
     default: false
   creativesecurity.bypass.damage.animal.trader.llama:
     description: Allows to damage trader llama in creative mode
+    default: false
+  creativesecurity.bypass.damage.animal.strider:
+    description: Allows to damage strider in creative mode
     default: false
     
     
@@ -417,7 +421,11 @@ permissions:
       creativesecurity.bypass.damage.mob.zombie.husk: true
       creativesecurity.bypass.damage.mob.zombie.drowned: true
       creativesecurity.bypass.damage.mob.zombie.villager: true
-      creativesecurity.bypass.damage.mob.zombie.pigman: true
+      creativesecurity.bypass.damage.mob.hoglin: true
+      creativesecurity.bypass.damage.mob.piglin: true
+      creativesecurity.bypass.damage.mob.piglin.brute: true
+      creativesecurity.bypass.damage.mob.zoglin: true
+      creativesecurity.bypass.damage.mob.zombified.piglin: true
       creativesecurity.bypass.damage.mob.shulker: true
       creativesecurity.bypass.damage.mob.shulker.bullet: true
       creativesecurity.bypass.damage.mob.horse.skeleton: true
@@ -459,8 +467,20 @@ permissions:
   creativesecurity.bypass.damage.mob.zombie.villager:
     description: Allows to damage zombie villagers in creative mode
     default: false
-  creativesecurity.bypass.damage.mob.zombie.pigman:
-    description: Allows to damage zombie pigmans in creative mode
+  creativesecurity.bypass.damage.mob.hoglin:
+    description: Allows to damage hoglins in creative mode
+    default: false
+  creativesecurity.bypass.damage.mob.piglin:
+    description: Allows to damage piglins in creative mode
+    default: false
+  creativesecurity.bypass.damage.mob.piglin.brute:
+    description: Allows to damage brute piglins in creative mode
+    default: false
+  creativesecurity.bypass.damage.mob.zoglin:
+    description: Allows to damage zoglins in creative mode
+    default: false
+  creativesecurity.bypass.damage.mob.zombified.piglin:
+    description: Allows to damage zombified piglins in creative mode
     default: false
   creativesecurity.bypass.damage.mob.shulker.bullet:
     description: Allows to damage shulker bullets in creative mode

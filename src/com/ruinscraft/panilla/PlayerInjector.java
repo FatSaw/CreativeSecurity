@@ -5,11 +5,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import net.minecraft.server.v1_15_R1.EntityPlayer;
-import net.minecraft.server.v1_15_R1.EnumProtocolDirection;
-import net.minecraft.server.v1_15_R1.PacketDecoder;
-import net.minecraft.server.v1_15_R1.PacketDecompressor;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import net.minecraft.server.v1_16_R3.EnumProtocolDirection;
+import net.minecraft.server.v1_16_R3.PacketDecoder;
+import net.minecraft.server.v1_16_R3.PacketDecompressor;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;

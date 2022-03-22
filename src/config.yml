@@ -173,7 +173,6 @@ helpmenu:
     1:
     - '§c/§ecreativesecurity reload'
     - '§c/§ecreativesecurity unmarkblocks'
-    - '§c/§ecreativesecurity cmdblock'
     - '§c/§ecreativesecurity status §7[игрок]'
     - '§c/§ecreativesecurity invsee §7[игрок] (режим игры) (номер инвентаря)'
     - '§c/§ecreativesecurity clear §7[игрок] [режим игры] [номер инвентаря]'
@@ -183,6 +182,7 @@ helpmenu:
     - '§c/§egmgui'
     - '§c/§egmc'
     - '§c/§egms'
+    - ''
     - ''
     - '§bПлагин создан §aGasha§b, обновлён §aBomb'
     - ''
